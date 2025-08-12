@@ -1,15 +1,54 @@
+import { icons } from "@/constants/icons";
+import { images } from "@/constants/images";
 import { Tabs } from "expo-router";
 import { Bookmark, House, Search, User } from "lucide-react-native";
 import React from "react";
+import {
+  Image,
+  ImageBackground,
+  ImageSourcePropType,
+  Text,
+  View,
+} from "react-native";
+
+interface TabIconProps {
+  title: string;
+  icon: ImageSourcePropType;
+  focused: boolean;
+}
+const TabIcon = ({ title, icon, focused }: TabIconProps) => {
+  if (!focused) {
+    return (
+      <View className="size-full flex justify-center items-center">
+        <Image
+          source={icon}
+          className="size-5"
+          style={{ tintColor: focused ? undefined : "#a8b5db" }}
+        />
+      </View>
+    );
+  }
+
+  return (
+    <ImageBackground
+      source={images.highlight}
+      className="w-full flex flex-row flex-1 min-w-28 min-h-14 mt-3 justify-center items-center rounded-full overflow-hidden"
+    >
+      <Image source={icon} className="size-5" tintColor={"black"} />
+      <Text className="text-base text-secondary font-semibold ml-2">
+        {title}
+      </Text>
+    </ImageBackground>
+  );
+};
 
 const TabsLayout = () => {
   return (
     <Tabs
       screenOptions={{
-        // Header styling
+        // header styles
         headerStyle: {
           backgroundColor: "#0F0D23",
-          height: 100,
         },
         headerTitleStyle: {
           color: "#FFFFFF",
@@ -21,23 +60,18 @@ const TabsLayout = () => {
 
         // Tab Bar styling
         tabBarShowLabel: false,
-        // tabBarItemStyle: {
-        //   width: "100%",
-        //   height: "100%",
-        //   justifyContent: "center",
-        //   alignItems: "center",
-        // },
+        tabBarItemStyle: {
+          width: "100%",
+          height: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+        },
         tabBarStyle: {
           backgroundColor: "#0F0D23",
-          paddingTop: 5,
           borderRadius: 50,
           marginHorizontal: 20,
           marginBottom: 36,
-          height: 52,
-          // position: "absolute",
-          // overflow: "hidden",
-          borderWidth: 1,
-          borderColor: "#0F0D23",
+          height: 49,
         },
       }}
     >
@@ -45,22 +79,26 @@ const TabsLayout = () => {
         name="(home)/index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color, size }) => <House color={color} size={size} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon title="Home" icon={icons.home} focused={focused} />
+          ),
         }}
       />
       <Tabs.Screen
         name="search/index"
         options={{
           title: "Search",
-          tabBarIcon: ({ color, size }) => <Search color={color} size={size} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon title="Search" icon={icons.search} focused={focused} />
+          ),
         }}
       />
       <Tabs.Screen
         name="saved/index"
         options={{
           title: "Saved",
-          tabBarIcon: ({ color, size }) => (
-            <Bookmark color={color} size={size} />
+          tabBarIcon: ({ focused }) => (
+            <TabIcon title="Saved" icon={icons.save} focused={focused} />
           ),
         }}
       />
@@ -68,7 +106,9 @@ const TabsLayout = () => {
         name="profile/index"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon title="Profile" icon={icons.person} focused={focused} />
+          ),
         }}
       />
     </Tabs>
