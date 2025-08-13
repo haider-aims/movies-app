@@ -10,6 +10,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { TabProvider, useTabContext } from "@/hooks/useTabContext";
 
 interface TabIconProps {
   title: string;
@@ -42,21 +43,13 @@ const TabIcon = ({ title, icon, focused }: TabIconProps) => {
   );
 };
 
-const TabsLayout = () => {
+const TabsLayoutContent = () => {
+  const { scrollToTop } = useTabContext();
+
   return (
     <Tabs
       screenOptions={{
-        // header styles
-        headerStyle: {
-          backgroundColor: "#0F0D23",
-        },
-        headerTitleStyle: {
-          color: "#FFFFFF",
-          fontSize: 20,
-          fontWeight: "600",
-        },
-        headerTitleAlign: "center",
-        headerShadowVisible: false,
+        headerShown:false,
 
         // Tab Bar styling
         tabBarShowLabel: false,
@@ -70,8 +63,12 @@ const TabsLayout = () => {
           backgroundColor: "#0F0D23",
           borderRadius: 50,
           marginHorizontal: 20,
-          marginBottom: 36,
+          marginBottom: 25,
           height: 49,
+          position: 'absolute',
+          overflow: 'hidden',
+          borderWidth: 1,
+          borderColor: "#0F0D23",
         },
       }}
     >
@@ -82,6 +79,11 @@ const TabsLayout = () => {
           tabBarIcon: ({ focused }) => (
             <TabIcon title="Home" icon={icons.home} focused={focused} />
           ),
+        }}
+        listeners={{
+          tabPress: () => {
+            scrollToTop('Home');
+          },
         }}
       />
       <Tabs.Screen
@@ -112,6 +114,14 @@ const TabsLayout = () => {
         }}
       />
     </Tabs>
+  );
+};
+
+const TabsLayout = () => {
+  return (
+    <TabProvider>
+      <TabsLayoutContent />
+    </TabProvider>
   );
 };
 
