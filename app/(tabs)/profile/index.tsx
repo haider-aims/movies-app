@@ -1,12 +1,15 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text } from "react-native";
+import React from "react";
+import ScreenWrapper from "@/components/screenWrapper";
 
 const Profile = () => {
   return (
-    <View>
-      <Text>Profile</Text>
-    </View>
-  )
-}
+    <ScreenWrapper>
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-2xl font-bold text-white">Under Working</Text>
+      </View>
+    </ScreenWrapper>
+  );
+};
 
-export default Profile
+export default Profile;

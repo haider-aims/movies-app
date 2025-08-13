@@ -15,7 +15,7 @@ const SearchBar = ({
   onChangeText,
 }: SearchBarProps) => {
   return (
-    <View className="flex-row items-center bg-dark-200 rounded-full px-5 py-2 mb-5">
+    <View className="flex-row items-center bg-dark-200 rounded-full px-5 py-4 mb-5">
       <Image
         source={icons.search}
         className="size-5"
