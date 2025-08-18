@@ -11,7 +11,7 @@ import ScreenWrapper from "@/components/screenWrapper";
 const Search = () => {
   const { homeScrollRef } = useTabContext();
   const [inputValue, setInputValue] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(" ");
 
   const { data: movies, isLoading, isError, error } = useMovies(searchQuery);
 
