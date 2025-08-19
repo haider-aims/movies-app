@@ -1,17 +1,12 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
-import React, { useEffect } from "react";
 import { Movie } from "@/types/movie";
 import { Link } from "expo-router";
 import { icons } from "@/constants/icons";
 
 const MovieCard = ({ movieDetails }: { movieDetails: Movie }) => {
   const { id, title, poster_path, vote_average, release_date } = movieDetails;
-  //   useEffect(() => {
-  //     console.log("movies data: ", movieDetails);
-  //   }, [movieDetails]);
-
   const rating = Math.round(vote_average / 2);
-  const realseYear = release_date.split("-")[0];
+  const realseYear = release_date?.split("-")[0];
 
   return (
     <Link href={`/movie/${id}`} asChild>

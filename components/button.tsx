@@ -57,7 +57,7 @@ export const Button: React.FC<ButtonProps> = ({
     }
     
     // Variant styles
-    if (disabled || loading) {
+    if (disabled) {
       baseStyles += " opacity-50";
     } else {
       switch (variant) {

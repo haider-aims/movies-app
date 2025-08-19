@@ -9,10 +9,19 @@ import {
 import React from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import ScreenWrapper from "@/components/screenWrapper";
-import { useMovieDetails } from "@/hooks/movies";
+import {
+  useGetSavedMovies,
+  useIsMovieSaved,
+  useMovieDetails,
+  useSaveMovie,
+  useUnsaveMovie,
+} from "@/hooks/movies";
 import { MovieDetail } from "@/types/movie";
 import { getRating, getRealseYear } from "@/utils/utilityFunctions";
 import { icons } from "@/constants/icons";
+import { Heart } from "lucide-react-native";
+import { useUser } from "@/providers/auth";
+import Toast from "react-native-toast-message";
 
 interface MovieInfoProps {
   label: string;
@@ -30,13 +39,60 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 
 const MovieDetails = () => {
   const router = useRouter();
-  const { id } = useLocalSearchParams();
+
+  const { id: movieId } = useLocalSearchParams();
+
   const {
     data: movieDetails,
     isLoading,
     isError,
     error,
-  } = useMovieDetails(id as string);
+  } = useMovieDetails(movieId as string);
+  const user = useUser();
+  const { data: isSaved } = useIsMovieSaved(user?.id || "", movieId as string);
+
+  const { mutateAsync: saveMovie } = useSaveMovie();
+  const { mutateAsync: unsaveMovie } = useUnsaveMovie();
+
+  const handleSaveMovie = async () => {
+    try {
+      if (isSaved) {
+        await unsaveMovie({
+          userId: user?.id || "",
+          movieId: movieId as string,
+        });
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: "Movie unsaved",
+        });
+        router.back();
+        return;
+      }
+
+      const movieDetailsToSave = {
+        id: parseInt(movieId as string),
+        title: movieDetails?.title,
+        poster_path: movieDetails?.poster_path,
+        release_date: movieDetails?.release_date,
+        vote_average: movieDetails?.vote_average,
+      };
+
+      await saveMovie({ userId: user?.id || "", movie: movieDetailsToSave });
+
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Movie saved",
+      });
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.message,
+      });
+    }
+  };
 
   if (isLoading || !movieDetails) {
     return (
@@ -133,15 +189,17 @@ const MovieDetails = () => {
         </ScrollView>
 
         <TouchableOpacity
-          className="absolute bottom-5 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50"
-          onPress={router.back}
+          className="absolute bottom-5 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row gap-x-2 items-center justify-center z-50"
+          onPress={handleSaveMovie}
         >
-          <Image
-            source={icons.arrow}
-            className="size-5 mr-1 mt-0.5 rotate-180"
-            tintColor="#fff"
+          <Heart
+            size={20}
+            fill={isSaved ? "#ef4444" : "transparent"}
+            color={isSaved ? "#ef4444" : "#ffffff"}
           />
-          <Text className="text-white font-semibold text-base">Go Back</Text>
+          <Text className="text-white font-semibold text-base">
+            {isSaved ? "Remove" : "Save"}
+          </Text>
         </TouchableOpacity>
       </>
     </ScreenWrapper>

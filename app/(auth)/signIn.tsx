@@ -8,7 +8,7 @@ import { CustomTextInput } from "@/components/inputs";
 import { Button } from "@/components/button";
 import { icons } from "@/constants/icons";
 import { Link, useRouter } from "expo-router";
-import { useAuth } from "@/providers/auth";
+import { useSignIn } from "@/hooks/auth";
 import Toast from "react-native-toast-message";
 
 export const signInSchema = z.object({
@@ -20,7 +20,10 @@ export type SignInSchemaType = z.infer<typeof signInSchema>;
 
 const SignIn = () => {
   const router = useRouter();
-  const { signIn } = useAuth();
+  const {
+    mutateAsync: signin,
+    isPending: signInLoading,
+  } = useSignIn();
   const {
     control,
     handleSubmit,
@@ -36,9 +39,10 @@ const SignIn = () => {
   const onSubmit = async (data: SignInSchemaType) => {
     console.log("signin Form Data:", data);
     const { email, password } = data;
+    
     try {
-      const data = await signIn(email, password);
-      console.log('login data: ', data)
+      await signin({ email, password });
+      
       router.replace("/");
       Toast.show({
         type: "success",
@@ -85,12 +89,13 @@ const SignIn = () => {
           <Button
             title="Login"
             fullWidth
+            loading={signInLoading}
             onPress={handleSubmit(onSubmit)}
             className="mt-10"
           />
 
           <Text className="text-md text-light-100 mt-6">
-            If you don't have account?{" "}
+            If you don&apos;t have account?{" "}
             <Link href={"/signUp"} className="text-accent text-lg font-bold">
               SignUp
             </Link>

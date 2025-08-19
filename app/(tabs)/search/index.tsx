@@ -1,5 +1,5 @@
 import { View, Image, ActivityIndicator, Text, FlatList } from "react-native";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { debounce } from "lodash";
 import { icons } from "@/constants/icons";
 import SearchBar from "@/components/searchBar";
@@ -7,6 +7,7 @@ import { useMovies } from "@/hooks/movies";
 import MovieCard from "@/components/movieCard";
 import { useTabContext } from "@/hooks/useTabContext";
 import ScreenWrapper from "@/components/screenWrapper";
+import Logo from "@/components/logo";
 
 const Search = () => {
   const { homeScrollRef } = useTabContext();
@@ -32,9 +33,14 @@ const Search = () => {
       {searchQuery.trim() && !isLoading && !isError && (
         <Text className="text-xl text-white font-bold mb-3">
           {movies?.results && movies.results.length > 0 ? (
-            <>Search Results for <Text className="text-accent">{searchQuery}</Text></>
+            <>
+              Search Results for{" "}
+              <Text className="text-accent">{searchQuery}</Text>
+            </>
           ) : (
-            <Text className="text-gray-400">No results found for "{searchQuery}"</Text>
+            <Text className="text-gray-400">
+              No results found for &quot;{searchQuery}&quot;
+            </Text>
           )}
         </Text>
       )}
@@ -43,7 +49,7 @@ const Search = () => {
   return (
     <ScreenWrapper>
       <View className="flex-1">
-        <Image source={icons.logo} className="w-12 h-10 mt-20 mb-5 mx-auto" />
+        <Logo />
         <View className="px-5">
           <SearchBar
             placeholder={"Search movies..."}
@@ -85,7 +91,7 @@ const Search = () => {
               searchQuery.trim() && !isLoading ? (
                 <View className="flex-1 justify-center items-center mt-10">
                   <Text className="text-gray-400 text-center text-lg">
-                    No movies found for "{searchQuery}"
+                    No movies found for &quot;{searchQuery}&quot;
                   </Text>
                   <Text className="text-gray-500 text-center text-sm mt-2">
                     Try searching with different keywords

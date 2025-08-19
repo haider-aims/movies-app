@@ -7,8 +7,7 @@ import {
 } from "react";
 import { AppState } from "react-native";
 import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase";
-import Toast from "react-native-toast-message";
+import { authService } from "@/services/auth";
 
 interface AuthContextType {
   user: User | null;
@@ -16,9 +15,6 @@ interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   refresh: () => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<any>;
-  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,18 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUser = async () => {
     try {
       setLoading(true);
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Error fetching session:", error);
-        setUser(null);
-        setSession(null);
-        return;
-      }
-
+      const session = await authService.getSession();
       setUser(session?.user ?? null);
       setSession(session);
     } catch (error) {
@@ -54,23 +39,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
-    await supabase.auth.signUp({
-      email,
-      password,
-    });
-  };
-
-  const signIn = async (email: string, password: string) => {
-    return await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-  };
-  const signOut = async () => {
-    await supabase.auth.signOut();
-  };
-
   useEffect(() => {
     // Initial load
     fetchUser();
@@ -78,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = authService.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event);
       setUser(session?.user ?? null);
       setSession(session);
@@ -114,9 +82,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     isAuthenticated: !!user,
     refresh: fetchUser,
-    signUp,
-    signIn,
-    signOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

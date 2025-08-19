@@ -8,7 +8,7 @@ import { CustomTextInput } from "@/components/inputs";
 import { Button } from "@/components/button";
 import { icons } from "@/constants/icons";
 import { Link, useRouter } from "expo-router";
-import { useAuth } from "@/providers/auth";
+import { useSignUp } from "@/hooks/auth";
 import Toast from "react-native-toast-message";
 
 export const signUpSchema = z
@@ -28,7 +28,11 @@ export type SignUpSchemaType = z.infer<typeof signUpSchema>;
 
 const SignUp = () => {
   const router = useRouter();
-  const { signUp } = useAuth();
+  const {
+    mutateAsync: signup,
+    isPending: signUpLoading,
+  } = useSignUp();
+
   const {
     control,
     handleSubmit,
@@ -43,14 +47,17 @@ const SignUp = () => {
   });
 
   const onSubmit = async (data: SignUpSchemaType) => {
+    const { email, password } = data;
+
     try {
-      const { email, password } = data;
-      await signUp(email, password);
-      router.replace("/signIn");
+      await signup({ email, password });
+      
       Toast.show({
         type: "success",
-        text1: "Sign Up Sucessfull",
+        text1: "Check your email",
+        text2: "Please confirm your account before signing in",
       });
+      router.replace("/signIn");
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -102,6 +109,7 @@ const SignUp = () => {
           <Button
             title="SignUp"
             fullWidth
+            loading={signUpLoading}
             onPress={handleSubmit(onSubmit)}
             className="mt-10"
           />
