@@ -1,7 +1,6 @@
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { Tabs } from "expo-router";
-import { Bookmark, House, Search, User } from "lucide-react-native";
 import React from "react";
 import {
   Image,

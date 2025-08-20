@@ -13,6 +13,14 @@ const ListHeader = () => (
   </View>
 );
 
+const ListEmptyComponent = () => (
+  <View className="flex-1 justify-center items-center">
+    <Text className="text-gray-400 text-center text-lg">
+      No saved movies found
+    </Text>
+  </View>
+);
+
 const Saved = () => {
   const user = useUser();
   const {
@@ -66,6 +74,7 @@ const Saved = () => {
           marginBottom: 10,
         }}
         ListHeaderComponent={() => <ListHeader />}
+        ListEmptyComponent={() => <ListEmptyComponent />}
       />
     </ScreenWrapper>
   );

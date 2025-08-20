@@ -131,7 +131,7 @@ class MovieService {
         .select("*")
         .eq("user_id", userId)
         .eq("movie_id", movieId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         throw error;

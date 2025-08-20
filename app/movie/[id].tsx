@@ -1,16 +1,8 @@
-import {
-  ActivityIndicator,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
 import React from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import ScreenWrapper from "@/components/screenWrapper";
 import {
-  useGetSavedMovies,
   useIsMovieSaved,
   useMovieDetails,
   useSaveMovie,
@@ -22,6 +14,7 @@ import { icons } from "@/constants/icons";
 import { Heart } from "lucide-react-native";
 import { useUser } from "@/providers/auth";
 import Toast from "react-native-toast-message";
+import { Button } from "@/components/button";
 
 interface MovieInfoProps {
   label: string;
@@ -39,20 +32,17 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 
 const MovieDetails = () => {
   const router = useRouter();
-
+  const user = useUser();
   const { id: movieId } = useLocalSearchParams();
-
+  const { data: isSaved } = useIsMovieSaved(user?.id || "", movieId as string);
   const {
     data: movieDetails,
     isLoading,
     isError,
     error,
   } = useMovieDetails(movieId as string);
-  const user = useUser();
-  const { data: isSaved } = useIsMovieSaved(user?.id || "", movieId as string);
-
-  const { mutateAsync: saveMovie } = useSaveMovie();
-  const { mutateAsync: unsaveMovie } = useUnsaveMovie();
+  const { mutateAsync: saveMovie, isPending: isSaving } = useSaveMovie();
+  const { mutateAsync: unsaveMovie, isPending: isUnSaving } = useUnsaveMovie();
 
   const handleSaveMovie = async () => {
     try {
@@ -188,19 +178,19 @@ const MovieDetails = () => {
           </View>
         </ScrollView>
 
-        <TouchableOpacity
-          className="absolute bottom-5 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row gap-x-2 items-center justify-center z-50"
+        <Button
+          title={isSaved ? "Remove" : "Save"}
           onPress={handleSaveMovie}
-        >
-          <Heart
-            size={20}
-            fill={isSaved ? "#ef4444" : "transparent"}
-            color={isSaved ? "#ef4444" : "#ffffff"}
-          />
-          <Text className="text-white font-semibold text-base">
-            {isSaved ? "Remove" : "Save"}
-          </Text>
-        </TouchableOpacity>
+          loading={isSaving || isUnSaving}
+          className="absolute bottom-6 left-0 right-0 mx-5"
+          leftIcon={
+            <Heart
+              size={20}
+              fill={isSaved ? "#ef4444" : "transparent"}
+              color={isSaved ? "#ef4444" : "#ffffff"}
+            />
+          }
+        />
       </>
     </ScreenWrapper>
   );
